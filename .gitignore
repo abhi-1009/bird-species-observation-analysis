@@ -3,8 +3,8 @@ venv/
 __pycache__/
 *.pyc
 
-# Generated data (regenerate from raw Excel files by running birds_analysis.py)
-bird_data_cleaned.csv
+# Generated data (bird_data_cleaned.csv is intentionally NOT ignored —
+# the deployed Streamlit app reads it directly since it can't reach local MySQL)
 
 # Generated charts (regenerate by running birds_analysis.py)
 eda_outputs/
