@@ -5,9 +5,6 @@ Bird Species Observation Analysis — Streamlit Dashboard
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from sqlalchemy import create_engine
-from urllib.parse import quote_plus
-from config import DB_PASSWORD
 
 st.set_page_config(page_title="Bird Species Observation Analysis", layout="wide")
 
@@ -16,9 +13,7 @@ st.set_page_config(page_title="Bird Species Observation Analysis", layout="wide"
 # ---------------------------------------------------------------------------
 @st.cache_data(ttl=3600)
 def load_data():
-    password = quote_plus(DB_PASSWORD)
-    engine = create_engine(f"mysql+pymysql://root:{password}@localhost:3306/bird_observations")
-    return pd.read_sql("SELECT * FROM bird_observations", engine)
+    return pd.read_csv("bird_data_cleaned.csv")
 df = load_data()
 
 # ---------------------------------------------------------------------------
