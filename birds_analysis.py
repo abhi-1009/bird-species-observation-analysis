@@ -17,17 +17,19 @@ FOREST_FILE = "Bird_Monitoring_Data_FOREST.XLSX"
 GRASSLAND_FILE = "Bird_Monitoring_Data_GRASSLAND.XLSX"
 
 def load_habitat(path, label):
+    """Load every sheet from one habitat's Excel workbook and tag each row with its habitat label."""
     sheets = pd.read_excel(path, sheet_name=None)
     for name, d in sheets.items():
         d["Habitat"], d["Source_Sheet"] = label, name
     return pd.concat(sheets.values(), ignore_index=True)
-
+ 
 def show(title, series):
+    """Print a labeled summary (used throughout EDA to keep output readable in the terminal)."""
     print(f"\n--- {title} ---")
     print(series)
-    
+
 def chart(kind, filename, title, **kwargs):
-    """kind: 'count' (countplot) or 'hist' or 'box'"""
+    """Build one chart (count/hist/box/barh) and save it into eda_outputs/."""
     plt.figure(figsize=kwargs.pop("figsize", (8, 5)))
     if kind == "count":
         sns.countplot(**kwargs)
@@ -75,6 +77,8 @@ print("Note: Site_Name/NPSTaxonCode are Forest-only, Previously_Obs is Grassland
 before = len(df)
 df = df.drop_duplicates()
 print(f"Dropped {before - len(df)} duplicate rows")
+assert df["Temperature"].between(-50, 60).all(), "Temperature has implausible values"
+assert 10000 <= len(df) <= 20000, "Row count outside expected range after cleaning"
 
 df["Month"] = df["Date"].dt.month
 df["Season"] = df["Month"].map(lambda m: "Winter" if m in (12, 1, 2) else
