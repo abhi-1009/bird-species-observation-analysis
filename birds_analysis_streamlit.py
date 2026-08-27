@@ -44,8 +44,25 @@ div[data-testid="stMetric"] {{
     background: #ffffffcc; border-radius: 12px; padding: 12px;
     border: 1px solid {t['card_border']};
 }}
+.icard {{
+    background: #ffffffcc; border-radius: 10px; padding: 14px 16px;
+    margin-bottom: 12px; border-left: 6px solid var(--c, {t['heading']});
+    min-height: 110px;
+}}
+.icard h4 {{ margin: 0 0 6px 0; font-size: 15px; }}
+.icard p {{ margin: 0; font-size: 13px; color: #333; line-height: 1.4; }}
 </style>
 """, unsafe_allow_html=True)
+
+
+def cards(items, color, cols=2):
+    """Render {icon, title, text} dicts as a grid of short cards instead of long bullet text."""
+    c = st.columns(cols)
+    for i, x in enumerate(items):
+        with c[i % cols]:
+            st.markdown(f'<div class="icard" style="--c:{color};"><h4>{x["icon"]} {x["title"]}</h4>'
+                        f'<p>{x["text"]}</p></div>', unsafe_allow_html=True)
+
 
 # ---------------------------------------------------------------------------
 # PAGE 1: HOME — Problem Statement & Business Use Cases
@@ -196,55 +213,53 @@ elif page == "Dashboard":
         st.plotly_chart(px.bar(aou_counts, x="AOU_Code", y="Count", title="Top 10 AOU Codes by Observation Count"),
                          use_container_width=True)
         st.caption("AOU codes are standardized species identifiers used in national conservation tracking.")
-        
+
 # ---------------------------------------------------------------------------
-# PAGE 3: INSIGHTS & RECOMMENDATIONS
+# PAGE 3: INSIGHTS & RECOMMENDATIONS — card layout (per coordinator feedback)
 # ---------------------------------------------------------------------------
 else:
     st.title("Insights & Recommendations")
 
-    st.markdown("### Other Insights")
-    st.markdown(
-        "- **High-activity regions and seasons**: certain admin units (e.g. the parks with the highest "
-        "plot-level species diversity in the Spatial tab) consistently show more species and more "
-        "observations, making them priority zones for conservation attention and eco-tourism development.\n"
-        "- **Environmental influence on behavior**: temperature and humidity show visible relationships "
-        "with observation distance and disturbance levels, suggesting weather conditions shape how "
-        "closely and how often birds can be reliably observed.\n"
-        "- **At-risk species**: species flagged under PIF Watchlist or Regional Stewardship status "
-        "represent a smaller but conservation-critical subset of total observations, and should be "
-        "prioritized in monitoring efforts even though they're numerically rare."
-    )
+    st.markdown("### 🔍 Key Insights")
+    cards([
+        {"icon": "🔥", "title": "Activity Hotspots",
+         "text": "Certain parks/plots consistently show higher species diversity — priority zones for conservation and eco-tourism."},
+        {"icon": "🌡️", "title": "Weather Effects",
+         "text": "Temperature and humidity visibly shape observation distance and how reliably birds are spotted."},
+        {"icon": "⚠️", "title": "At-Risk Species",
+         "text": "Watchlist and Stewardship species are a small but conservation-critical subset needing focused monitoring."},
+    ], color="#234d3f")
 
-    st.markdown("### Business Insights")
-    st.markdown(
-        "- **Wildlife Conservation**: the parks and plots identified as biodiversity hotspots are the "
-        "clearest candidates for protected-status review or expanded monitoring.\n"
-        "- **Eco-Tourism**: the top plots by species diversity, combined with peak activity months/hours, "
-        "can directly inform where and when to schedule bird-watching tours.\n"
-        "- **Policy Support**: the watchlist and stewardship-status breakdowns give conservation agencies "
-        "a data-backed shortlist of species needing protective policy attention."
-    )
+    st.markdown("### 💼 Business Insights")
+    cards([
+        {"icon": "🌳", "title": "Wildlife Conservation",
+         "text": "Hotspot plots are the clearest candidates for protected-status review or expanded monitoring."},
+        {"icon": "🦅", "title": "Eco-Tourism",
+         "text": "Top-diversity plots plus peak activity windows can directly shape bird-watching tour schedules."},
+        {"icon": "📋", "title": "Policy Support",
+         "text": "Watchlist/stewardship breakdowns give agencies a ready, data-backed shortlist for policy attention."},
+    ], color="#123a4d")
 
-    st.markdown("### Limitations")
-    st.markdown(
-        "- The dataset covers a single year (2018) and two seasons (Spring, Summer) only — trends here "
-        "describe within-season patterns, not multi-year or full-annual-cycle trends.\n"
-        "- Forest and Grassland source files have slightly different schemas (Forest includes Site_Name "
-        "and NPSTaxonCode; Grassland includes Previously_Obs instead), so a small number of fields are "
-        "not directly comparable across habitats.\n"
-        "- No GPS/latitude-longitude coordinates are included, so spatial analysis relies on Admin_Unit "
-        "and Plot_Name codes rather than a true geographic map.\n"
-        "- Only 3 observers contributed data, so observer-trend findings may reflect individual habits "
-        "as much as true species behavior (a known observer-bias risk)."
-    )
+    st.markdown("### ⚠️ Limitations")
+    cards([
+        {"icon": "📅", "title": "Single Year Only",
+         "text": "Data covers 2018, Spring/Summer only — no true multi-year or full-annual trend is possible."},
+        {"icon": "🧩", "title": "Schema Differences",
+         "text": "Forest and Grassland files each include a few fields the other doesn't (Site_Name vs. Previously_Obs)."},
+        {"icon": "🗺️", "title": "No GPS Data",
+         "text": "Spatial analysis relies on plot/admin-unit codes rather than true latitude-longitude coordinates."},
+        {"icon": "👥", "title": "Observer Bias",
+         "text": "Only 3 observers contributed all data — individual habits may influence patterns as much as bird behavior."},
+    ], color="#8a6d00")
 
-    st.markdown("### Recommendations")
-    st.markdown(
-        "- Expand data collection to multiple years and all four seasons to support genuine year-over-year "
-        "trend analysis.\n"
-        "- Add GPS coordinates in future data collection to enable true geographic hotspot mapping.\n"
-        "- Increase the observer pool and standardize protocols further to reduce observer-bias risk.\n"
-        "- Prioritize monitoring and habitat protection resources toward the top watchlist species and "
-        "highest-diversity plots identified in this dashboard."
-    )
+    st.markdown("### ✅ Recommendations")
+    cards([
+        {"icon": "📈", "title": "Expand Coverage",
+         "text": "Collect multi-year, all-season data to support genuine year-over-year trend analysis."},
+        {"icon": "🛰️", "title": "Add GPS Coordinates",
+         "text": "Enable true geographic hotspot mapping in future data collection."},
+        {"icon": "👥", "title": "Grow Observer Pool",
+         "text": "Add more observers and standardize protocols to reduce observer-bias risk."},
+        {"icon": "🎯", "title": "Prioritize Resources",
+         "text": "Focus protection efforts on the top watchlist species and highest-diversity plots identified here."},
+    ], color="#4d2340")
